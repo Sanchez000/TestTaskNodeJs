@@ -1,5 +1,6 @@
-import { info, rescrop } from "easyimage";
-import { extname, basename,join } from 'path';
+import { rescrop } from "easyimage";
+import { basename,join } from 'path';
+import { unlink } from 'fs/promises';
 
 export async function resizeImage(imagePath: string) {
     try {
@@ -13,6 +14,11 @@ export async function resizeImage(imagePath: string) {
             height: 200,
             gravity:"Center",
         });
+
+        if(resizedFileInfo){
+            await unlink(imagePath);
+            console.log('successfully deleted origin fullsize file');
+        }
 
         return resizedFileInfo.path;
     } catch (e) {
