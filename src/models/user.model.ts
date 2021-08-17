@@ -1,15 +1,9 @@
 import mongoose from 'mongoose';
-
-export interface UserDto {
-    first_name: string;
-    last_name: string;
-    email: string;
-    photo: string;
-  }
+import mongooseUniqueValidator from 'mongoose-unique-validator';
 
 const Schema = mongoose.Schema;
 
-export const UserSchema = new Schema<UserDto>({
+export const UserSchema = new Schema({
     first_name: {
         type: String,
         required: true,
@@ -35,6 +29,8 @@ export const UserSchema = new Schema<UserDto>({
 },
 {   timestamps: true });
 
-const UserModel = mongoose.model<UserDto>('User', UserSchema);
+UserSchema.plugin(mongooseUniqueValidator, { message: 'Error, expected {PATH} to be unique.' });
+
+const UserModel = mongoose.model('User', UserSchema);
 
 export default UserModel;

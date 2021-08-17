@@ -1,17 +1,17 @@
-import UserModel, { UserDto } from "../models/user.model";
+import UserModel from "../models/user.model";
+import { UserDto } from '../models/user.dto';
 import { resizeImage } from "./image.service";
 import UserNotFoundException from '../exceptions/user-not-found.exceptions';
+import { unlink } from 'fs/promises';
 
-export async function createUser(body: UserDto) {
+export async function createUser(body: UserDto) {  
+    const resizedImagePath = await resizeImage(body.photo);
+    
     try {
-        const resizedImagePath = await resizeImage(body.photo);
-
         body.photo = resizedImagePath;
-        //TODO fix email uniq validation error throw to client side
-        // MongoError: E11000 duplicate key error collection: blabla.users index: email_1 dup key: { email: "asas22221sss1@mail.com"
-// }
         return await UserModel.create(body)
     } catch (error) {
+        await unlink(resizedImagePath);
         throw new Error(error)
     }
 }
